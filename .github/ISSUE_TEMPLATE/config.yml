@@ -1,8 +1,4 @@
 blank_issues_enabled: false
 contact_links:
   - name: Testing Issue Templates
-    url: https://jira.athoc.com
     about: Some description
-  - name: GitHub Security Bug Bounty
-    url: https://bounty.github.com/
-    about: Please report security vulnerabilities here.
