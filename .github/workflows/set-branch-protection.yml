@@ -1,0 +1,53 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Workflow to Apply Branch Protection
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  #schedule:
+  #- cron: "*/2 * * * *" 
+ 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  GH-Repo-BP-Build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Soure Code
+        uses: actions/checkout@v2
+      
+      - name: Install Python 3.7
+        uses: actions/setup-python@v2.2.1
+        with:
+             python-version: "3.7"
+             
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pipenv wheel
+      - id: cache-pipenv
+        uses: actions/cache@v1
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: Install dependencies (requests)
+        if: steps.cache-pipenv.outputs.cache-hit != 'true'
+        run: |
+          pipenv install requests         
+
+      # Runs a set of commands using the runners shell
+      - name: Call Python script
+        env:
+          ACCESS_TOKEN: ${{ secrets.GH_API_ACCESS_TOKEN }}
+        run: |
+          echo "***************** Calling Branch Protection python script **********************"
+          echo $GITHUB_API_URL        
+          pipenv run python bp.py --Token "${{env.ACCESS_TOKEN}}" --GH_API_URL $GITHUB_API_URL --Organization "athoc-eng"
