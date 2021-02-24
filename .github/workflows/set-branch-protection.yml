@@ -50,4 +50,4 @@ jobs:
         run: |
           echo "***************** Calling Branch Protection python script **********************"
           echo $GITHUB_API_URL        
-          pipenv run python bp.py --Token "${{env.ACCESS_TOKEN}}" --GH_API_URL $GITHUB_API_URL --Organization "athoc-eng"
+          pipenv run python bp.py --Token "${{env.ACCESS_TOKEN}}" --GH_API_URL $GITHUB_API_URL --Organization "athoc-eng" --Repos "athoc-eng/poll-test"
