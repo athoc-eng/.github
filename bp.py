@@ -68,7 +68,7 @@ def set_protection(target_repo, branch, data=None):
 def delete_protection(target_repo, branch):
     url = make_api_url(target_repo, 'branches', branch, 'protection')
     result = requests.delete(url, headers=make_api_headers())
-    if result.status_code != 200:
+    if result.status_code != 204:
         raise Exception("Exception Occurred: " + str(result.status_code) + ": " + result.reason + ": " + result.text)
 
     return result
@@ -86,7 +86,7 @@ def get_repos():
             raise Exception("Exception Occurred: " + str(results.status_code) + ": " + results.reason + ": " + results.text)  
 
         #parsed = urlparse.urlparse(results.links.get("last")["url"])
-        #int(parse_qs(parsed.query)["page"][0])
+        #repoCount = int(parse_qs(parsed.query)["page"][0])
         for result in results.json() :
             if result["name"] != ".github":
                 gh_repos.append(result["full_name"])
@@ -99,7 +99,6 @@ def main():
     try:
         print(args["GH_API_URL"])
         repos = get_repos()
-        print(len(repos))
         f = open('bp.json',)
         data = json.load(f)
         for repo in repos:
@@ -110,6 +109,7 @@ def main():
                 #get_protection(repo, branch)
                 print("Setting Branch Protection")
                 set_protection(repo, branch, data)
+                #delete_protection(repo, branch)
                 print("Set Branch Protection Succesfully.")
     
     except:
