@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Workflow to Apply Branch Protection
+name: Set Branch Protection
 
 # Controls when the action will run. 
 on:
