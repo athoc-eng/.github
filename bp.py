@@ -80,13 +80,13 @@ def get_repos():
         # gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
         gh_repos = args["Repos"].split(',')
     else:
-        url = args["GH_API_URL"] + "/orgs/" + args["Organization"] + "/repos?type=all&per_page=1"        
+        url = args["GH_API_URL"] + "/orgs/" + args["Organization"] + "/repos?type=all&per_page=100"        
         results = requests.get(url, headers=make_api_headers())
         if results.status_code != 200:
             raise Exception("Exception Occurred: " + str(results.status_code) + ": " + results.reason + ": " + results.text)  
 
-        parsed = urlparse.urlparse(results.links.get("last")["url"])
-        int(parse_qs(parsed.query)["page"][0])
+        #parsed = urlparse.urlparse(results.links.get("last")["url"])
+        #int(parse_qs(parsed.query)["page"][0])
         for result in results.json() :
             if result["name"] != ".github":
                 gh_repos.append(result["full_name"])
@@ -104,13 +104,13 @@ def main():
         data = json.load(f)
         for repo in repos:
             print(repo)
-            # branches = get_branches(repo)
-            # for branch in branches:
-                # print(branch)               
+            branches = get_branches(repo)
+            for branch in branches:
+                print(branch)               
                 #get_protection(repo, branch)
-                # print("Setting Branch Protection")
-                # set_protection(repo, branch, data)
-                # print("Set Branch Protection Succesfully.")
+                print("Setting Branch Protection")
+                set_protection(repo, branch, data)
+                print("Set Branch Protection Succesfully.")
     
     except:
         raise
