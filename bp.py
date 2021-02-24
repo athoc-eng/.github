@@ -107,10 +107,12 @@ def main():
             for branch in branches:
                 print(branch)               
                 #get_protection(repo, branch)
-                print("Setting Branch Protection")
-                set_protection(repo, branch, data)
-                #delete_protection(repo, branch)
-                print("Set Branch Protection Succesfully.")
+                #print("Setting Branch Protection")
+                #set_protection(repo, branch, data)                
+                #print("Set Branch Protection Succesfully.")
+                print("Deleting Branch Protection")
+                delete_protection(repo, branch)
+                print("Deleted Branch Protection Succesfully.")
     
     except:
         raise
