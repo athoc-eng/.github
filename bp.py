@@ -45,8 +45,11 @@ def get_protection(target_repo, branch):
     url = make_api_url(target_repo, 'branches', branch, 'protection')
     result = requests.get(url, headers=make_api_headers())
     if result.status_code != 200:
-        raise Exception("Exception Occurred: " + str(result.status_code) + ": " + result.reason + ": " + result.text)
-
+        if result.status_code == 404:
+            return None
+        else:
+            raise Exception("Exception Occurred: " + str(result.status_code) + ": " + result.reason + ": " + result.text)
+        
     return result.json()
 
 
@@ -159,6 +162,10 @@ def main():
                     set_protection(repo, branch, data)
                     print("Set Branch Protection Succesfully for " + branch)
                 elif args["Action"].lower() == "delete":
+                    protection = get_protection(repo, branch)
+                    if protection == None:
+                        print("Branch is not protected")
+                        continue
                     print("Deleting Branch Protection for " + branch)
                     delete_protection(repo, branch)
                     print("Deleted Branch Protection Succesfully for " + branch)                
