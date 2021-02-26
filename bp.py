@@ -17,7 +17,7 @@ def get_auth_token():
 
 def make_api_url(*arguments):
     return '/'.join((args["GH_API_URL"], 'repos', *arguments))
-
+    
 
 def make_api_headers():
     APPLICATION_HEADER_VALUE='application/vnd.github.loki-preview+json'
@@ -78,8 +78,8 @@ def delete_protection(target_repo, branch):
 def get_repos():
     gh_repos = []
     if args["Repos"] != None:
-        # gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
-        gh_repos = args["Repos"].split(',')
+        gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
+        #gh_repos = args["Repos"].split(',')
     else:
         url = args["GH_API_URL"] + "/orgs/" + args["Organization"] + "/repos?type=all&per_page=100"        
         results = requests.get(url, headers=make_api_headers())
@@ -93,7 +93,7 @@ def get_repos():
     return gh_repos
     
     
-def getPageCount(itemCount, limit):
+def get_page_count(itemCount, limit):
     pageCount = 0
     if itemCount < limit:
         pageCount = 1
@@ -107,50 +107,58 @@ def getPageCount(itemCount, limit):
     return pageCount      
 
 
-def getAllRepos():
+def get_paged_repos():
     limit = 100
     gh_repos = []
+    excludedRepos = []
+    f = open("excludeRepos.txt", "r")
+    excludedRepos = f.readlines()
+    f.close()
     if args["Repos"] != None:
-        gh_repos = args["Repos"].split(',')
+        gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
+        #gh_repos = args["Repos"].split(',')
     else:
         url = args["GH_API_URL"] + "/orgs/" + args["Organization"] + "/repos?type=all&per_page=1"
-        repoCntResult = getRepoResults(url)
+        repoCntResult = get_repo_results(url)
         parsed = urlparse.urlparse(repoCntResult.links.get("last")["url"])
         repoCount = int(parse_qs(parsed.query)["page"][0])
-        pageCount = getPageCount(repoCount, limit)
+        pageCount = get_page_count(repoCount, limit)
         for pageNum in range(pageCount):
             pageNum = pageNum + 1
             url = args["GH_API_URL"] + "/orgs/" + args["Organization"] + "/repos?type=all&per_page=" + str(limit) + "&page=" + str(pageNum)
-            results = getRepoResults(url)
+            results = get_repo_results(url)
             for result in results.json():
-                if result["name"] != ".github":
+                if result["name"] not in excludedRepos:
                     gh_repos.append(result["full_name"])
 
     return gh_repos     
 
-def getRepoResults(url):
+
+def get_repo_results(url):
     results = requests.get(url, headers=make_api_headers())
     if results.status_code != 200:
         raise Exception("Exception Occurred: " + str(results.status_code) + ": " + results.reason + ": " + results.text)  
 
     return results
 
+
 def main():    
     print("Entering Main function inside Python")
     try:
         print("Action: " + args["Action"])
-        repos = getAllRepos()
+        repos = get_paged_repos()
         f = open('bp.json',)
         data = json.load(f)
+        f.close()
         for repo in repos:
             print("Repo: " + repo)
             branches = get_branches(repo)
             for branch in branches:
-                if args["Action"] == "set":
+                if args["Action"].lower() == "set":
                     print("Setting Branch Protection for " + branch)
                     set_protection(repo, branch, data)
                     print("Set Branch Protection Succesfully for " + branch)
-                elif args["Action"] == "delete":
+                elif args["Action"].lower() == "delete":
                     print("Deleting Branch Protection for " + branch)
                     delete_protection(repo, branch)
                     print("Deleted Branch Protection Succesfully for " + branch)                
