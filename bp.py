@@ -80,7 +80,7 @@ def delete_protection(target_repo, branch):
 
 def get_repos():
     gh_repos = []
-    if args["Repos"] != None:
+    if bool(args["Repos"]):
         gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
         #gh_repos = args["Repos"].split(',')
     else:
@@ -117,7 +117,7 @@ def get_paged_repos():
     f = open("excludeRepos.txt", "r")
     excludedRepos = f.readlines()
     f.close()
-    if args["Repos"] != None:
+    if bool(args["Repos"]):
         gh_repos = [args["Organization"] + "/" + s for s in args["Repos"].split(',')]
         #gh_repos = args["Repos"].split(',')
     else:
