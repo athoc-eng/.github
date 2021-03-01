@@ -43,10 +43,10 @@ jobs:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
-      - name: Install dependencies (requests)
+      - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
-          pipenv install requests         
+          pipenv install         
 
       # Runs a set of commands using the runners shell
       - name: Call Python script
