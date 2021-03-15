@@ -160,7 +160,7 @@ def main():
                 protection = get_protection(repo, branch)
                 if args["Action"].lower() == "set":                                        
                     if protection != None:
-                        print("Deleting Branch Protection for repo" + repo + " & branch " + branch)
+                        print("Deleting Branch Protection for repo " + repo + " & branch " + branch)
                         delete_protection(repo, branch)
                     print("Setting Branch Protection for " + branch)
                     set_protection(repo, branch, data[branch])
