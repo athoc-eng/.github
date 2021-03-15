@@ -157,16 +157,19 @@ def main():
             print("Repo: " + repo)
             branches = get_branches(repo)
             for branch in branches:
-                if args["Action"].lower() == "set":
+                protection = get_protection(repo, branch)
+                if args["Action"].lower() == "set":                                        
+                    if protection != None:
+                        print("Deleting Branch Protection for repo" + repo + " & branch " + branch)
+                        delete_protection(repo, branch)
                     print("Setting Branch Protection for " + branch)
-                    set_protection(repo, branch, data)
+                    set_protection(repo, branch, data[branch])
                     print("Set Branch Protection Succesfully for " + branch)
-                elif args["Action"].lower() == "delete":
-                    protection = get_protection(repo, branch)
+                elif args["Action"].lower() == "delete":                    
                     if protection == None:
                         print("Branch is not protected")
                         continue
-                    print("Deleting Branch Protection for " + branch)
+                    print("Deleting Branch Protection for repo" + repo + " & branch " + branch)
                     delete_protection(repo, branch)
                     print("Deleted Branch Protection Succesfully for " + branch)                
     
